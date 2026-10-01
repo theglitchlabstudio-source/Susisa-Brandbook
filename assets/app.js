@@ -2,11 +2,11 @@
 'use strict';
 var BB = window.BB, S = BB.status, LS = 'susisa-brandbook-theme';
 var CH = Object.keys(BB.ch).map(Number).sort(function(a,b){return a-b;}).map(function(n){return BB.ch[n];});
-var ORDER = ['final','early','draft','open','later'];
+var ORDER = ['raw','final','early','draft','open','later'];
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 function fa(n){ return String(n).replace(/\d/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'[d];}); }
-function counts(c){ var o={final:0,early:0,draft:0,open:0,later:0}; c.sections.forEach(function(s){ o[s.st]++; }); return o; }
-function total(){ var o={final:0,early:0,draft:0,open:0,later:0}; CH.forEach(function(c){ var k=counts(c); ORDER.forEach(function(x){o[x]+=k[x];}); }); return o; }
+function counts(c){ var o={raw:0,final:0,early:0,draft:0,open:0,later:0}; c.sections.forEach(function(s){ o[s.st]++; }); return o; }
+function total(){ var o={raw:0,final:0,early:0,draft:0,open:0,later:0}; CH.forEach(function(c){ var k=counts(c); ORDER.forEach(function(x){o[x]+=k[x];}); }); return o; }
 function stackbar(k, cls){
   var n = ORDER.reduce(function(a,x){return a+k[x];},0)||1;
   return '<div class="'+(cls||'stackbar')+'" role="img" aria-label="'+ORDER.map(function(x){return S[x].t+' '+fa(k[x]);}).join('، ')+'">'+
@@ -27,6 +27,8 @@ function block(b){
     case 'swatches': return '<div class="swatches">'+b.items.map(function(s){ return '<div class="sw"><div style="background:'+esc(s.hex)+'"></div><p><b>'+esc(s.name)+'</b><code>'+esc(s.hex)+'</code><br>'+esc(s.use)+'</p></div>'; }).join('')+'</div>';
     case 'links': return '<ul>'+b.items.map(function(l){return '<li><a href="'+esc(l.u)+'" target="_blank" rel="noopener">'+esc(l.t)+'</a></li>';}).join('')+'</ul>';
     case 'status': return '<div class="tbl"><table><tbody>'+ORDER.map(function(x){ return '<tr><td>'+badge(x)+'</td><td>'+esc(S[x].d)+'</td></tr>'; }).join('')+'</tbody></table></div>';
+    case 'raw': return '<ul class="rawlist">'+b.items.map(function(it,i){ return '<li class="k-'+(it.k||'founder')+'"><span class="rid">'+esc(b.pre||'R')+fa(i+1)+'</span><span class="rt">'+esc(it.t)+'</span>'+(it.l?'<span class="rl">خط '+fa(it.l)+'</span>':'')+'</li>'; }).join('')+'</ul>';
+    case 'tags': return '<div class="tags'+(b.bad?' bad':'')+'">'+b.items.map(function(x){return '<span>'+esc(x)+'</span>';}).join('')+'</div>';
     case 'src': return '<div class="src"><b>'+esc(b.label)+'</b> '+esc(b.text)+'</div>';
     case 'evidence': return '<div class="tbl"><table><tbody>'+BB.evidence.map(function(e){ return '<tr><td>'+esc(e[0])+'</td><td>'+esc(e[1])+'</td></tr>'; }).join('')+'</tbody></table></div>';
     case 'owners': return '<div class="tbl"><table><thead><tr><th>فصل</th><th>مالک</th><th>بازبینی</th></tr></thead><tbody>'+CH.map(function(c){ return '<tr><td><a href="#/ch/'+c.n+'">'+fa(c.n)+' · '+esc(c.title)+'</a></td><td>'+esc(owner(c.owner))+'</td><td>'+esc(c.review)+'</td></tr>'; }).join('')+'</tbody></table></div>';
@@ -54,11 +56,12 @@ function vHome(){
   });
   return h;
 }
+function partOf(n){ var r=''; (BB.parts||[]).forEach(function(p){ if(p.ch.indexOf(n)>=0) r=p.t; }); return r; }
 function vChapter(n){
   var c = BB.ch[n]; if(!c) return vNotFound();
   var k = counts(c), i = CH.indexOf(c), prev = CH[i-1], next = CH[i+1];
   var h = '<header class="chead"><div class="big" aria-hidden="true">'+fa(c.n)+'</div><h1>'+esc(c.title)+'</h1><p>'+esc(c.intro)+'</p></header>'+
-    '<div class="facts"><span>مالک: <b>'+esc(owner(c.owner))+'</b></span><span>آخرین به‌روزرسانی: <b>'+esc(c.updated)+'</b></span><span>بازبینی: <b>'+esc(c.review)+'</b></span><span>'+(c.group==='open'?'در نسخهٔ افتتاحیه':'بعد از افتتاحیه')+'</span></div>'+
+    '<div class="facts"><span>مالک: <b>'+esc(owner(c.owner))+'</b></span><span>آخرین به‌روزرسانی: <b>'+esc(c.updated)+'</b></span><span>بازبینی: <b>'+esc(c.review)+'</b></span><span>بخش: <b>'+esc(partOf(c.n))+'</b></span><span>'+(c.group==='open'?'در نسخهٔ افتتاحیه':'بعد از افتتاحیه')+'</span></div>'+
     stackbar(k)+'<div class="legend" style="margin-bottom:10px">'+ORDER.filter(function(x){return k[x];}).map(function(x){ return '<span><em style="background:var(--c-'+x+')"></em>'+S[x].t+' '+fa(k[x])+'</span>'; }).join('')+'</div>';
   h += c.sections.map(section).join('');
   h += '<nav class="pager" aria-label="فصل قبل و بعد">'+(next?'<a href="#/ch/'+next.n+'"><small>فصل بعد</small>'+fa(next.n)+' · '+esc(next.title)+'</a>':'<span></span>')+(prev?'<a href="#/ch/'+prev.n+'"><small>فصل قبل</small>'+fa(prev.n)+' · '+esc(prev.title)+'</a>':'<span></span>')+'</nav>';
