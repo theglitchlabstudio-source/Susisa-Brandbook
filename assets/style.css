@@ -130,3 +130,8 @@ blockquote{margin:.8em 0;padding:12px 18px;border-inline-start:5px solid var(--r
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 @media print{.side,.topbar,.pager{display:none}.shell{display:block}.main{padding:0;max-width:none}.sec{break-inside:avoid}}
+
+.src{font-size:.85rem;color:var(--muted,#6b6560);border-inline-start:3px solid var(--gold,#FAE089);padding:.2rem .7rem;margin:.6rem 0}.src b{color:var(--ink,inherit);margin-inline-end:.4rem}
+.main{min-width:0;max-width:100%}.tbl{max-width:100%}
+.tbl table{min-width:0}
+@media(max-width:900px){.tbl td,.tbl th{font-size:.85rem;padding:.5rem .6rem}}

@@ -27,6 +27,7 @@ function block(b){
     case 'swatches': return '<div class="swatches">'+b.items.map(function(s){ return '<div class="sw"><div style="background:'+esc(s.hex)+'"></div><p><b>'+esc(s.name)+'</b><code>'+esc(s.hex)+'</code><br>'+esc(s.use)+'</p></div>'; }).join('')+'</div>';
     case 'links': return '<ul>'+b.items.map(function(l){return '<li><a href="'+esc(l.u)+'" target="_blank" rel="noopener">'+esc(l.t)+'</a></li>';}).join('')+'</ul>';
     case 'status': return '<div class="tbl"><table><tbody>'+ORDER.map(function(x){ return '<tr><td>'+badge(x)+'</td><td>'+esc(S[x].d)+'</td></tr>'; }).join('')+'</tbody></table></div>';
+    case 'src': return '<div class="src"><b>'+esc(b.label)+'</b> '+esc(b.text)+'</div>';
     case 'evidence': return '<div class="tbl"><table><tbody>'+BB.evidence.map(function(e){ return '<tr><td>'+esc(e[0])+'</td><td>'+esc(e[1])+'</td></tr>'; }).join('')+'</tbody></table></div>';
     case 'owners': return '<div class="tbl"><table><thead><tr><th>فصل</th><th>مالک</th><th>بازبینی</th></tr></thead><tbody>'+CH.map(function(c){ return '<tr><td><a href="#/ch/'+c.n+'">'+fa(c.n)+' · '+esc(c.title)+'</a></td><td>'+esc(owner(c.owner))+'</td><td>'+esc(c.review)+'</td></tr>'; }).join('')+'</tbody></table></div>';
   }
