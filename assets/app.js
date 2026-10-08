@@ -19,6 +19,8 @@ function owner(c){ return BB.owners[c]||c; }
 function block(b){
   switch(b.type){
     case 'p': return '<p>'+esc(b.text)+'</p>';
+    case 'h': return '<h3 class="bh">'+esc(b.text)+'</h3>';
+    case 'img': return /^(https?:\/\/|assets\/|img\/)/.test(b.src||'')?'<figure class="bimg"><img loading="lazy" src="'+esc(b.src)+'" alt="'+esc(b.alt||'')+'">'+(b.alt?'<figcaption>'+esc(b.alt)+'</figcaption>':'')+'</figure>':'';
     case 'list': return '<ul>'+b.items.map(function(i){return '<li>'+esc(i)+'</li>';}).join('')+'</ul>';
     case 'quote': return '<blockquote>'+esc(b.text)+'</blockquote>';
     case 'note': return '<div class="note '+(b.kind||'')+'">'+(b.kind==='live'?'<b>نسخهٔ زنده. </b>':(b.kind==='warn'?'<b>توجه. </b>':''))+esc(b.text.replace(/^نسخهٔ زنده: /,''))+'</div>';
